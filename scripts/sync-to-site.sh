@@ -24,6 +24,8 @@ rsync -a --delete \
   --exclude '*.log' \
   --exclude '.env' \
   --exclude '.env.*' \
+  --exclude 'README.md' \
+  --exclude 'scripts/sync-to-site.sh' \
   "$DEV/" "$SITE/"
 
 cd "$SITE"
