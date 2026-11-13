@@ -36,7 +36,8 @@ function render() {
   const { progress, annosByPage } = collect()
   view.textContent = buildArchiveMd(new Date().toISOString(), progress, annosByPage)
 
-  const read = Object.keys(progress).length
+  const progressKeys = Object.keys(progress)
+  const read = progressKeys.filter((id) => /^p[12]-ch\d+$/.test(id)).length
   let annotations = 0
   let replies = 0
   for (const list of Object.values(annosByPage)) {
@@ -49,7 +50,7 @@ function render() {
   if (statRead) statRead.textContent = String(read)
   if (statAnno) statAnno.textContent = String(annotations)
   if (statReply) statReply.textContent = String(replies)
-  if (empty) empty.hidden = read > 0 || annotations > 0
+  if (empty) empty.hidden = progressKeys.length > 0 || annotations > 0
 }
 
 async function copyText(text: string) {
