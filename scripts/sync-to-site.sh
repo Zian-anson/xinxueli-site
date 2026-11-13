@@ -9,6 +9,11 @@ if [ ! -d "$SITE" ]; then
   exit 1
 fi
 
+if [ ! -f "$DEV/package.json" ]; then
+  echo "开发目录不完整：$DEV" >&2
+  exit 1
+fi
+
 rsync -a --delete \
   --exclude '.git/' \
   --exclude 'node_modules/' \
