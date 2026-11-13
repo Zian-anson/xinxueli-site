@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+
+const partTitles: Record<number, { title: string; sub: string }> = {
+  1: { title: '第一部分 · 开发', sub: '从用 DeepSeek Harness 到自造 Harness' },
+  2: { title: '第二部分 · 商业闭环', sub: '做出产品，收到钱' },
+}
+const all = (await getCollection('course')).sort((a, b) => a.data.part - b.data.part || a.data.chapter - b.data.chapter)
+const parts = [1, 2]
+  .map((p) => ({ part: p, chapters: all.filter((c) => c.data.part === p) }))
+  .filter((p) => p.chapters.length > 0)
+
+const minutes = (body: string | undefined) => Math.max(5, Math.round((body?.length ?? 0) / 350))
+---
+<Base title="课程" description="写代码之外的全部编程知识：11 章从装工具到收到第一笔钱，主轴是验收与判断。" wide>
+  <div class="space-y-10">
+    <header class="max-w-3xl">
+      <p class="text-sm font-medium text-brand">课程全景</p>
+      <h1 class="mt-2 text-3xl font-bold md:text-4xl">11 章，从装工具到收到第一笔钱</h1>
+      <p class="mt-4 text-sm leading-7 text-stone-600">
+        这门课不按语法组织，按验收与判断的主轴组织：第一部分补写代码之外的编程通识（装工具、看懂骨架、说清需求、过坎、拆前端、拆架构、改造、自造 Harness），第二部分用真实产品完成交付（上线、收款、毕业项目）。全程不写代码，也不要求读源码。
+      </p>
+      <p class="mt-3 text-sm">
+        <a href="/map.html" class="text-brand hover:underline">看这张课对应的基础大类 →</a>
+        <span class="mx-2 text-stone-300">·</span>
+        <a href="/frontend.html" class="text-stone-500 hover:text-brand">前端基础</a>
+        <span class="mx-2 text-stone-300">·</span>
+        <a href="/describe.html" class="text-stone-500 hover:text-brand">问题描述器</a>
+      </p>
+      <div class="mt-6 card p-4">
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <span class="font-medium text-stone-700">你的阅读进度</span>
+          <span class="text-stone-500"><span data-progress-text>0</span> / {all.length} 章</span>
+        </div>
+        <div class="mt-2 h-2 overflow-hidden rounded-full bg-stone-100">
+          <div data-progress-bar class="h-full w-0 rounded-full bg-brand transition-all duration-500"></div>
+        </div>
+        <p class="mt-2 text-xs text-stone-400">进度记在这台设备的浏览器里；读过的章节会自动打勾。</p>
+      </div>
+    </header>
+
+    {parts.map((p) => (
+      <section>
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold">{partTitles[p.part].title}</h2>
+            <p class="mt-1 text-sm text-stone-500">{partTitles[p.part].sub}</p>
+          </div>
+          <span class="tag">{p.chapters.length} 章</span>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2">
+          {p.chapters.map((c) => (
+            <a href={`/course/${c.data.id}.html`} data-chapter-id={c.data.id} class="card card-hover group block p-5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-serif-cn text-2xl text-amber-700/50">{String(c.data.chapter).padStart(2, '0')}</span>
+                  <h3 class="text-base font-semibold group-hover:text-brand">{c.data.title}</h3>
+                </div>
+                <span data-read-badge hidden class="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">已读</span>
+              </div>
+              <p class="mt-2 text-sm leading-6 text-stone-500">{c.data.goal}</p>
+              <div class="mt-3 flex items-center gap-3 text-xs text-stone-400">
+                <span>{c.data.pace}</span>
+                <span>约 {minutes(c.body)} 分钟</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <script>
+    const read = new Set<string>()
+    try {
+      const progress = JSON.parse(localStorage.getItem('xxl:progress') ?? '{}') as Record<string, unknown>
+      for (const key of Object.keys(progress)) read.add(key)
+    } catch {
+      // 进度读不到时保持 0，不影响页面
+    }
+    const cards = document.querySelectorAll<HTMLElement>('[data-chapter-id]')
+    let count = 0
+    cards.forEach((card) => {
+      if (read.has(card.dataset.chapterId ?? '')) {
+        count++
+        card.querySelector<HTMLElement>('[data-read-badge]')?.removeAttribute('hidden')
+        card.classList.add('border-emerald-200')
+      }
+    })
+    const text = document.querySelector<HTMLElement>('[data-progress-text]')
+    const bar = document.querySelector<HTMLElement>('[data-progress-bar]')
+    if (text) text.textContent = String(count)
+    if (bar && cards.length > 0) bar.style.width = `${Math.round((count / cards.length) * 100)}%`
+  </script>
+</Base>

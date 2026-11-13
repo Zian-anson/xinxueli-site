@@ -1,0 +1,22 @@
+{
+  "name": "xinxueli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "node scripts/check-content.mjs && astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "marked": "^15.0.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

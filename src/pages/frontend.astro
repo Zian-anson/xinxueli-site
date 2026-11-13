@@ -1,0 +1,281 @@
+---
+import Base from '../layouts/Base.astro'
+
+const units = [
+  { id: 'fe-elements', title: '元素与容器' },
+  { id: 'fe-layout', title: '布局' },
+  { id: 'fe-box', title: '盒子' },
+  { id: 'fe-type', title: '字体与颜色' },
+  { id: 'fe-responsive', title: '响应式' },
+  { id: 'fe-states', title: '状态' },
+  { id: 'fe-tools', title: '工具' },
+  { id: 'fe-symptoms', title: '症状词典' },
+  { id: 'fe-describe', title: '描述五件套' },
+]
+
+const elements = [
+  { see: '页面上的一块区域', name: '区块 / section', say: '“首页标题下面那一块”' },
+  { see: '里面装着别的东西的框', name: '容器 / container', say: '“按钮在卡片容器里”' },
+  { see: '按钮、文字、图片、输入框', name: '元素 / element', say: '“这个提交按钮”' },
+  { see: '元素外面的那层', name: '父元素 / parent', say: '“按钮的父容器宽度不够”' },
+  { see: '元素里面的东西', name: '子元素 / child', say: '“卡片里有两个子元素”' },
+  { see: '一排可点的入口', name: '导航 / nav', say: '“顶部导航的第三个链接”' },
+  { see: '有边框的一块内容', name: '卡片 / card', say: '“课程卡片的高度不一致”' },
+  { see: '浮在上面的小窗口', name: '弹窗 / modal', say: '“弹窗挡住了提交按钮”' },
+]
+
+const layout = [
+  { see: '几个东西排成一行', name: 'flex 布局', say: '“这一行用了 flex，按钮被挤到第二行”' },
+  { see: '多行多列的格子', name: 'grid 布局', say: '“三列网格在手机上变成一列”' },
+  { see: '上下堆叠、各占一整行', name: 'block', say: '“这两个块各占一行，所以断开了”' },
+  { see: '文字和图标并排', name: 'inline', say: '“图标和文字在同一行内”' },
+  { see: '浮起来、固定住、盖住别人', name: 'position', say: '“这个按钮是 fixed，滚到哪都跟着”' },
+  { see: '谁盖住谁', name: 'z-index', say: '“弹窗的层级比按钮低，所以被盖住”' },
+  { see: '内容超出框、出现滚动条', name: 'overflow', say: '“容器内容溢出，出现横向滚动”' },
+]
+
+const box = [
+  { see: '内容和边框之间的距离', name: 'padding', say: '“卡片内边距太大，字离边框太远”' },
+  { see: '两个元素之间的距离', name: 'margin', say: '“按钮和标题之间的外边距太小”' },
+  { see: '元素外面的线', name: 'border', say: '“输入框的边框颜色太浅”' },
+  { see: '元素多宽多高', name: 'width / height', say: '“按钮宽度固定 120px，文字放不下”' },
+  { see: '加了 padding 之后变得更宽', name: 'box-sizing', say: '“宽度算上了 padding，所以超出容器”' },
+]
+
+const typography = [
+  { see: '字太小或太大', name: 'font-size', say: '“手机上的正文只有 12px，太小”' },
+  { see: '行与行挤在一起', name: 'line-height', say: '“行高只有 1.2，读起来挤”' },
+  { see: '字太细或太粗', name: 'font-weight', say: '“标题字重不够，和正文拉不开”' },
+  { see: '颜色看不清', name: 'color / contrast', say: '“浅灰字在米色背景上对比度不够”' },
+  { see: '文字靠左/居中/靠右', name: 'text-align', say: '“这一行文字应该居中”' },
+]
+
+const responsive = [
+  { see: '手机上挤、换行、横向滚动', name: '响应式 / 断点', say: '“在 390px 宽的手机上，按钮被挤到第二行”' },
+  { see: '电脑上内容拉得太宽', name: 'max-width', say: '“正文最大宽度 720px，不要铺满全屏”' },
+  { see: '换设备尺寸就乱', name: '相对单位', say: '“用 % 或 rem，不要写死 px”' },
+  { see: '横屏和竖屏不一样', name: 'orientation', say: '“横屏时按钮跑出第一屏”' },
+  { see: '手机浏览器地址栏占了高度', name: 'viewport', say: '“手机视口高度要把地址栏算进去”' },
+]
+
+const states = [
+  { see: '鼠标移上去变色', name: 'hover', say: '“鼠标悬停时按钮没有反馈”' },
+  { see: '用键盘选中时有框', name: 'focus', say: '“键盘 Tab 到按钮时看不到焦点”' },
+  { see: '按钮灰了、点不动', name: 'disabled', say: '“提交后按钮变成不可点”' },
+  { see: '转圈、显示“加载中”', name: 'loading', say: '“请求还没回来，按钮一直在转圈”' },
+  { see: '提交失败的红字', name: 'error', say: '“提交失败后没有错误提示”' },
+  { see: '没有数据时的空白页', name: 'empty', say: '“没有记录时页面一片空白”' },
+]
+
+const tools = [
+  { see: '想知道某个元素是什么', name: '检查元素', say: '“右键检查这个按钮，看它的容器和类名”' },
+  { see: '想知道样式从哪来', name: 'computed style', say: '“看计算后的宽度、padding、margin”' },
+  { see: '页面报错、白屏', name: 'console', say: '“控制台报错全文贴给你”' },
+  { see: '想看手机效果', name: 'device toolbar', say: '“切到 390px 宽度看布局”' },
+  { see: '请求失败、数据没回来', name: 'network', say: '“这个请求的状态码是 500”' },
+]
+
+const symptoms = [
+  { name: '溢出', say: '“内容超出容器，出现横向滚动”', ask: 'overflow、宽度、padding、box-sizing' },
+  { name: '错位', say: '“按钮没对齐，跑到第二行”', ask: 'flex/grid、宽度、margin、换行' },
+  { name: '重叠', say: '“文字被图片盖住了”', ask: 'position、z-index、层级' },
+  { name: '遮挡', say: '“弹窗挡住了提交按钮”', ask: 'z-index、position、pointer-events' },
+  { name: '点不到', say: '“按钮在，但点不动”', ask: '层级、disabled、事件、遮挡' },
+  { name: '不显示', say: '“元素在页面里，但看不见”', ask: 'display、visibility、颜色、尺寸' },
+  { name: '跳动', say: '“加载完成后，内容往下跳了一下”', ask: '图片尺寸、占位、字体加载' },
+  { name: '换行', say: '“文字/按钮被挤到第二行”', ask: '宽度、white-space、flex-wrap' },
+  { name: '拉伸', say: '“图片被拉变形了”', ask: 'object-fit、宽高比、固定宽高' },
+  { name: '滚动', say: '“页面能横向滑动，底部多出滚动条”', ask: 'overflow、宽度、绝对定位' },
+  { name: '层级', say: '“两个元素谁在上面看不清”', ask: 'z-index、position、堆叠上下文' },
+]
+---
+<Base
+  title="前端基础"
+  description="看得懂前端，才说得出问题。前端最小词汇：元素、容器、布局、盒子、响应式、状态、症状词与描述模板。"
+  pageType="frontend"
+  pageId="frontend"
+  units={units}
+  wide
+>
+  <div class="space-y-12">
+    <nav class="text-xs text-stone-400">
+      <a href="/map.html" class="hover:text-brand">基础大类</a>
+      <span class="mx-2">/</span>
+      <span>界面基础（前端）</span>
+    </nav>
+    <header class="max-w-3xl">
+      <p class="eyebrow">基础大类 · 界面基础（前端）</p>
+      <h1 class="mt-5 text-3xl font-bold leading-tight md:text-5xl">看得懂前端，<br />才说得出问题。</h1>
+      <p class="mt-5 text-sm leading-8 text-stone-600 md:text-base">
+        截图只能告诉 AI 长什么样，说不出哪里不对、想要什么样。这一页给一套最小词汇：先知道每个东西叫什么，再用“环境、元素、位置、现象、期望”把问题说清。读源码不是前提。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="/describe.html" class="btn-primary">用问题描述器</a>
+        <a href="/map.html" class="btn-ghost">回到基础大类</a>
+        <a href="/course/p1-ch4.html" class="btn-ghost">去第 4 章拆前端</a>
+      </div>
+      <p class="mt-4 text-xs text-stone-400">本页可划词标注：选中一句话，点「标不懂」。</p>
+    </header>
+
+    <section id="fe-elements" data-unit data-unit-title="元素与容器" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">元素与容器</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">描述问题的第一步，是指对东西。说不清“哪个按钮”，AI 只能猜。</p>
+      <div class="mt-5 space-y-2">
+        {elements.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-layout" data-unit data-unit-title="布局" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">布局</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">布局决定东西排在哪。你不需要会写，但要能说出“它是怎么排的”。</p>
+      <div class="mt-5 space-y-2">
+        {layout.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-box" data-unit data-unit-title="盒子" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">盒子</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">每个元素都是一个盒子：内容、内边距、边框、外边距。大小和间距的问题，先从这里找。</p>
+      <div class="mt-5 space-y-2">
+        {box.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-type" data-unit data-unit-title="字体与颜色" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">字体与颜色</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">“字太小”“看不清”“太挤”，都能换成具体的词。</p>
+      <div class="mt-5 space-y-2">
+        {typography.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-responsive" data-unit data-unit-title="响应式" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">响应式</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">同一个页面在手机和电脑上长得不一样。描述问题时，先说你在什么宽度下看到的。</p>
+      <div class="mt-5 space-y-2">
+        {responsive.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-states" data-unit data-unit-title="状态" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">状态</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">同一个按钮，在正常、悬停、选中、禁用、加载、出错时，应该长得不一样。</p>
+      <div class="mt-5 space-y-2">
+        {states.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-tools" data-unit data-unit-title="工具" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">工具</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">浏览器自带工具，能让你看到“元素叫什么、样式从哪来、报错是什么”。不用会写代码，只要会看。</p>
+      <div class="mt-5 space-y-2">
+        {tools.map((e) => (
+          <div class="grid gap-2 rounded-lg border border-line bg-surface p-4 text-sm md:grid-cols-[1fr_1fr_1.2fr]">
+            <p class="text-stone-600">{e.see}</p>
+            <p class="font-medium text-stone-900">{e.name}</p>
+            <p class="text-stone-500">怎么说：{e.say}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="fe-symptoms" data-unit data-unit-title="症状词典" class="scroll-mt-24">
+      <h2 class="text-2xl font-bold">症状词典</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-600">先用症状词把现象归类，再说细节。下面每条都能直接套进描述模板。</p>
+      <div class="mt-5 overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="border-b border-line text-xs text-stone-500">
+            <tr>
+              <th class="py-2 pr-4 font-medium">症状</th>
+              <th class="py-2 pr-4 font-medium">怎么说</th>
+              <th class="py-2 font-medium">让 AI 查什么</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {symptoms.map((s) => (
+              <tr>
+                <td class="py-3 pr-4 font-medium text-stone-900">{s.name}</td>
+                <td class="py-3 pr-4 text-stone-600">{s.say}</td>
+                <td class="py-3 text-stone-500">{s.ask}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="fe-describe" data-unit data-unit-title="描述五件套" class="scroll-mt-24">
+      <div class="rounded-2xl border border-amber-200 bg-brand-soft p-6 md:p-8">
+        <h2 class="text-2xl font-bold">描述五件套</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-7 text-stone-700">环境、元素、位置、现象、期望，再加证据。五样齐全，AI 才知道你看到的是什么、想改成什么。</p>
+        <div class="mt-5 grid gap-3 md:grid-cols-5">
+          {[
+            ['环境', '手机 390px / 电脑 1440px / 浏览器'],
+            ['元素', '按钮、文字、图片、卡片、弹窗'],
+            ['位置', '页面顶部、中间、某个容器里'],
+            ['现象', '溢出、错位、重叠、点不到、不显示'],
+            ['期望', '正确的结果长什么样'],
+          ].map(([t, d]) => (
+            <div class="rounded-lg bg-white/70 p-3">
+              <p class="font-medium text-stone-800">{t}</p>
+              <p class="mt-1 text-xs leading-6 text-stone-500">{d}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-2">
+          <div class="rounded-lg border border-red-200 bg-white/70 p-4">
+            <p class="text-xs text-red-700">坏说法</p>
+            <p class="mt-1 text-sm leading-7 text-stone-700">“这个页面有点乱，帮我调一下。” + 截图</p>
+          </div>
+          <div class="rounded-lg border border-emerald-200 bg-white/70 p-4">
+            <p class="text-xs text-emerald-700">好说法</p>
+            <p class="mt-1 text-sm leading-7 text-stone-700">“在 390px 宽的手机上，首页标题下面的「开始学习」按钮被挤到第二行，宽度超出容器约 20px，出现横向滚动。期望标题、说明、按钮在第一屏内，按钮不超出容器。截图和 390px 视口下是这样。”</p>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a href="/describe.html" class="btn-primary">用问题描述器生成一段</a>
+          <a href="/course/p1-ch4.html" class="btn-ghost">去第 4 章拆前端</a>
+        </div>
+        <p class="mt-3 text-xs text-stone-500">证据可以是截图、报错全文、Console 信息、元素检查结果。没有证据也能描述，但加上证据 AI 少猜一轮。</p>
+      </div>
+    </section>
+  </div>
+</Base>

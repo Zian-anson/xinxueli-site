@@ -1,0 +1,94 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description?: string
+  pageType?: string
+  pageId?: string
+  units?: { id: string; title: string }[]
+  wide?: boolean
+}
+
+const {
+  title,
+  description = '教写代码之外的全部编程知识：不写代码，也不读源码；看得懂系统、说得清问题、验收得住结果，做出真实产品并收到第一笔钱。',
+  pageType,
+  pageId,
+  units = [],
+  wide = false,
+} = Astro.props
+
+const pageTitle = title.includes('新学力') ? title : `${title} · 新学力`
+
+const nav = [
+  ['/map.html', '基础'],
+  ['/course.html', '课程'],
+  ['/gates.html', '关卡库'],
+  ['/cases.html', '案例库'],
+  ['/dict.html', '词典'],
+  ['/me.html', '我的学习'],
+  ['/about.html', '关于'],
+]
+---
+<!doctype html>
+<html lang="zh-CN" data-page-id={pageId ?? ''}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fbfaf7" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="新学力" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {pageId && <script type="application/ld+json" set:html={JSON.stringify({ site: '新学力', pageType, pageId, title, units })} />}
+  </head>
+  <body class="min-h-screen text-foreground">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-brand focus:px-3 focus:py-2 focus:text-sm focus:text-white">跳到正文</a>
+    <header class="sticky top-0 z-40 border-b border-line/80 bg-background/85 backdrop-blur">
+      <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
+        <a href="/" class="shrink-0 font-serif-cn text-lg font-bold tracking-tight text-brand">新学力</a>
+        <nav aria-label="主导航" class="flex min-w-0 flex-1 items-center gap-5 overflow-x-auto whitespace-nowrap text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {nav.map(([href, label]) => (
+            <a href={href} class="text-stone-500 transition hover:text-brand">{label}</a>
+          ))}
+        </nav>
+        <a href="/course/p1-ch0.html" class="hidden shrink-0 rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white transition hover:bg-brand-strong sm:inline-flex">从第 0 章开始</a>
+      </div>
+    </header>
+    <main id="main" class:list={[wide ? 'mx-auto max-w-6xl px-4 py-8 md:py-12' : 'mx-auto max-w-4xl px-4 py-8 md:py-12']}>
+      <slot />
+    </main>
+    <footer class="mt-16 border-t border-line bg-surface/60">
+      <div class="mx-auto max-w-6xl px-4 py-10">
+        <div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p class="font-serif-cn text-lg font-bold text-brand">新学力</p>
+            <p class="mt-2 max-w-sm text-sm leading-6 text-stone-500">教写代码之外的全部编程知识。不写代码，也不读源码；看得懂系统，验收得住结果。机构发学历，这里给学力。</p>
+          </div>
+          <div class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm text-stone-500 sm:grid-cols-3">
+            <a href="/map.html" class="hover:text-brand">基础大类</a>
+            <a href="/course.html" class="hover:text-brand">课程</a>
+            <a href="/gates.html" class="hover:text-brand">关卡库</a>
+            <a href="/cases.html" class="hover:text-brand">案例库</a>
+            <a href="/dict.html" class="hover:text-brand">白话词典</a>
+            <a href="/me.html" class="hover:text-brand">我的学习</a>
+            <a href="/about.html" class="hover:text-brand">关于</a>
+            <a href="/tutor.json" class="hover:text-brand">导师协议</a>
+            <a href="/m2.html" class="hover:text-brand">模块二</a>
+            <a href="/m3.html" class="hover:text-brand">模块三</a>
+          </div>
+        </div>
+        <div class="mt-8 flex flex-col gap-2 border-t border-line pt-5 text-xs text-stone-400 sm:flex-row sm:items-center sm:justify-between">
+          <p>机构发学历，这里给学力。</p>
+          <p>用 Qoder 开发 · 发布在 Qoder Sites</p>
+        </div>
+      </div>
+    </footer>
+    {pageId && <script>import '../scripts/annotate'</script>}
+  </body>
+</html>

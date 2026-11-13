@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro'
+---
+<Base title="我的学习" description="你的阅读进度、标注与导师回填都在这里，一键导出学习档案交给你的 AI 导师。">
+  <div class="space-y-6">
+    <header class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm font-medium text-brand">学习档案</p>
+        <h1 class="mt-2 text-3xl font-bold">我的学习</h1>
+        <p class="mt-2 max-w-2xl text-sm leading-7 text-stone-500">读过的章节、标过的不懂、导师的回填都记在这台设备的浏览器里。导出成 markdown，交给你的 AI 导师，它就知道你学到哪、卡在哪。</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="copy-archive" class="btn-ghost">复制档案</button>
+        <button id="export-archive" class="btn-primary">导出学习档案</button>
+      </div>
+    </header>
+
+    <div class="grid gap-3 sm:grid-cols-3">
+      <div class="card p-4">
+        <p class="text-xs text-stone-500">已读章节</p>
+        <p class="mt-2 text-3xl font-bold text-stone-800"><span data-stat-read class="font-serif-cn">0</span></p>
+      </div>
+      <div class="card p-4">
+        <p class="text-xs text-stone-500">标注</p>
+        <p class="mt-2 text-3xl font-bold text-stone-800"><span data-stat-anno class="font-serif-cn">0</span></p>
+      </div>
+      <div class="card p-4">
+        <p class="text-xs text-stone-500">已回填</p>
+        <p class="mt-2 text-3xl font-bold text-stone-800"><span data-stat-reply class="font-serif-cn">0</span></p>
+      </div>
+    </div>
+
+    <div data-empty hidden class="rounded-xl border border-amber-200 bg-brand-soft p-5 text-sm text-stone-700">
+      <p class="font-medium">还没有学习记录。</p>
+      <p class="mt-1">去读一章，选中一句不懂的话，点「标不懂」。回来这里就能看到进度和标注。</p>
+      <a href="/course/p1-ch0.html" class="mt-3 inline-flex text-brand hover:underline">从第 0 章开始 →</a>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-lg font-semibold">档案预览</h2>
+        <span data-copy-status class="text-xs text-stone-400"></span>
+      </div>
+      <pre id="archive-view" class="mt-3 max-h-[28rem] overflow-auto whitespace-pre-wrap rounded-xl border border-line bg-white p-5 text-xs leading-6 text-stone-700"></pre>
+      <p class="mt-2 text-xs text-stone-400">档案只存在本机；清理浏览器数据会一起清掉。</p>
+    </div>
+  </div>
+
+  <script>import '../scripts/me'</script>
+</Base>

@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { splitUnits } from '../../lib/sections'
+import { marked } from 'marked'
+
+const entries = (await getCollection('dict')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'zh'))
+const bodies = new Map<string, string>()
+for (const e of entries) {
+  const units = splitUnits(e.data.term, e.body ?? '')
+  bodies.set(e.data.term, units.find((u) => u.title === '正文')?.md ?? '')
+}
+const plain = (md: string) => md.replace(/[#>*`_\-]/g, ' ').replace(/\s+/g, ' ').trim()
+---
+<Base title="白话词典" description="每个术语一句话定义加一个看得见的例子，讲到零基础也懂。" wide>
+  <div class="space-y-8">
+    <header class="max-w-3xl">
+      <p class="text-sm font-medium text-brand">白话词典</p>
+      <h1 class="mt-2 text-3xl font-bold md:text-4xl">每个词，先讲成人话</h1>
+      <p class="mt-4 text-sm leading-7 text-stone-600">一个词条 = 一句话定义 + 一个看得见的例子。读课程卡住时，回来查；和 AI 沟通时，用这里的说法。</p>
+    </header>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <label for="dict-search" class="sr-only">搜索词条</label>
+      <input id="dict-search" type="search" placeholder="搜一个词，比如「插件树」「API」" class="w-full max-w-md rounded-lg border border-line bg-white px-4 py-2.5 text-sm outline-none transition focus:border-amber-300 focus:ring-2 focus:ring-amber-100" />
+      <span class="text-xs text-stone-400"><span data-dict-count>{entries.length}</span> 条</span>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {entries.map((e) => (
+        <article data-dict-entry data-search={[e.data.term, ...e.data.aka, plain(bodies.get(e.data.term) ?? '')].join(' ')} class="card p-5">
+          <div class="flex flex-wrap items-baseline gap-2">
+            <h2 class="font-serif-cn text-lg font-semibold text-stone-900">{e.data.term}</h2>
+            {e.data.aka.length > 0 && <span class="text-xs text-stone-400">{e.data.aka.join(' · ')}</span>}
+          </div>
+          <div class="prose prose-stone prose-sm mt-2 max-w-none" set:html={marked.parse(bodies.get(e.data.term) ?? '') as string} />
+        </article>
+      ))}
+    </div>
+
+    <p data-dict-empty hidden class="rounded-xl border border-dashed border-line p-6 text-center text-sm text-stone-500">没有找到这个词。试试更短的关键词，或者去课程里搜。</p>
+  </div>
+
+  <script>
+    const input = document.getElementById('dict-search') as HTMLInputElement | null
+    const items = [...document.querySelectorAll<HTMLElement>('[data-dict-entry]')]
+    const count = document.querySelector<HTMLElement>('[data-dict-count]')
+    const empty = document.querySelector<HTMLElement>('[data-dict-empty]')
+    if (input) {
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase()
+        let matched = 0
+        for (const item of items) {
+          const hit = !q || (item.dataset.search ?? '').toLowerCase().includes(q)
+          item.hidden = !hit
+          if (hit) matched++
+        }
+        if (count) count.textContent = String(matched)
+        if (empty) empty.hidden = matched > 0
+      })
+    }
+  </script>
+</Base>

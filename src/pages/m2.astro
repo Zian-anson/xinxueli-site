@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro'
+
+const m = {
+  title: '和你的 Agent 一起学',
+  what: '把这套课程装进你在第一部分亲手造的个人 Harness，它变成随身导师，按你的进度定制学习。',
+  when: '模块一上线后开发。',
+  now: '先学模块一——第 7 章把你的 Harness 造好，等它来。',
+}
+---
+<Base title={m.title}>
+  <div class="max-w-3xl space-y-8">
+    <header>
+      <p class="text-sm font-medium text-brand">模块二</p>
+      <h1 class="mt-2 text-3xl font-bold">{m.title}<span class="ml-3 align-middle text-xs font-normal text-stone-500">建设中</span></h1>
+      <p class="mt-4 text-sm leading-7 text-stone-600">{m.what}</p>
+    </header>
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div class="card p-5">
+        <p class="text-xs text-stone-400">是什么</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">{m.what}</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs text-stone-400">什么时候来</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">{m.when}</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs text-stone-400">现在能做什么</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">{m.now}</p>
+      </div>
+    </div>
+    <div class="rounded-xl border border-amber-200 bg-brand-soft p-5 text-sm leading-7 text-stone-700">
+      <p class="font-medium">它和第一期的关系</p>
+      <p class="mt-1">第一期的学习档案格式已经定死：阅读进度、标注与回填、自测记录。第二期把这个格式直接装进你的 Harness，导师就能读懂你的学习情况。</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="/course.html" class="btn-primary">去学模块一</a>
+      <a href="/me.html" class="btn-ghost">看学习档案</a>
+    </div>
+  </div>
+</Base>

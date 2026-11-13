@@ -1,0 +1,262 @@
+---
+import Base from '../layouts/Base.astro'
+
+const axis = [
+  { no: '01', title: '看行为', body: '用真实数据点一遍：打开、输入、提交、看结果。界面是证据，不是说明书。' },
+  { no: '02', title: '读证据', body: '报错全文、日志、构建结果、网络请求、截图。先收集，再判断。' },
+  { no: '03', title: '认层', body: '界面、数据、后端、部署、AI 工程。问题出在哪一层，决定找谁、改什么。' },
+  { no: '04', title: '判影响', body: 'AI 改了哪些文件、哪些功能会受影响、谁会看到变化。' },
+  { no: '05', title: '判可逆', body: '能不能回退、有没有备份、是不是删数据/改域名/付钱这类回不去的决策。' },
+  { no: '06', title: '验收', body: '对照验收标准逐条打勾；过了再下一步，不过就回到证据。' },
+]
+
+const blocks = [
+  {
+    id: 'frontend',
+    title: '界面基础（前端）',
+    question: '界面上的东西叫什么，为什么长这样',
+    topics: ['元素、容器、父元素、子元素', '布局：flex、grid、position、z-index、overflow', '盒子：width/height、padding/margin、box-sizing', '响应式、组件状态、DevTools、症状词'],
+    links: [
+      ['/frontend.html', '前端基础详情'],
+      ['/describe.html', '问题描述器'],
+      ['/course/p1-ch4.html', '第 4 章 拆前端'],
+    ],
+  },
+  {
+    id: 'env',
+    title: '运行环境',
+    question: '程序跑在哪，为什么跑不起来',
+    topics: ['程序、进程、文件、路径、权限', '终端、命令、环境变量', '运行时、依赖、版本、包管理、镜像源、代理', '端口、日志、本机与服务器'],
+    links: [
+      ['/course/p1-ch0.html', '第 0 章 开工准备'],
+      ['/course/p1-ch4.html', '第 4 章 拆前端'],
+      ['/gates/g01.html', '关卡：代理没配'],
+      ['/gates/g02.html', '关卡：源不对'],
+    ],
+  },
+  {
+    id: 'web',
+    title: '网络与 Web',
+    question: '页面怎么到浏览器，请求去了哪',
+    topics: ['HTTP/HTTPS、请求与响应、状态码', 'DNS、域名、IP、端口、托管', 'API、JSON、鉴权、CORS', '静态站、动态站、部署与缓存'],
+    links: [
+      ['/course/p1-ch1.html', '第 1 章 看懂产品骨架'],
+      ['/course/p2-ch8.html', '第 8 章 做出真产品上线'],
+      ['/dict.html', '词典：API、域名、部署'],
+    ],
+  },
+  {
+    id: 'data',
+    title: '数据',
+    question: '数据存在哪，改动会不会丢',
+    topics: ['文件存储与数据库的区别', '表、字段、主键、索引、关系', '数据建模、迁移、备份、恢复', '隐私、权限、数据保留'],
+    links: [
+      ['/course/p2-ch8.html', '第 8 章 报名小站'],
+      ['/dict.html', '词典：数据库、文件存储'],
+    ],
+  },
+  {
+    id: 'engineering',
+    title: '工程与协作',
+    question: '改动怎么交付，坏了怎么回去',
+    topics: ['模块、接口、依赖方向', 'Git、分支、提交、回滚', '构建、产物、开发/生产环境', '测试、日志、监控、安全、依赖与许可证'],
+    links: [
+      ['/course/p1-ch4.html', '第 4 章 拆前端'],
+      ['/course/p1-ch7.html', '第 7 章 自造 Harness'],
+      ['/gates/g04.html', '关卡：端口被占用'],
+      ['/gates/g05.html', '关卡：静态站还是单页应用'],
+    ],
+  },
+  {
+    id: 'architecture',
+    title: '架构与产品',
+    question: '系统怎么组成，方案怎么选',
+    topics: ['分层、解耦、状态、事件、插件化', '技术选型、可逆/不可逆决策、成本', '需求拆解、范围控制、验收标准', '性能、可访问性、SEO'],
+    links: [
+      ['/course/p1-ch1.html', '第 1 章 产品解剖图'],
+      ['/course/p1-ch5.html', '第 5 章 拆架构、懂 Cordis'],
+      ['/course/p1-ch6.html', '第 6 章 改造实战'],
+      ['/dict.html', '词典：插件树、profile、patch'],
+    ],
+  },
+  {
+    id: 'ai',
+    title: 'AI / Agent 工程',
+    question: 'AI 怎么被指挥，怎么被验收',
+    topics: ['模型、上下文窗口、token、提示词', '工具调用、Agent 循环、记忆、RAG', '插件、协议、MCP、权限边界', '评估、幻觉、guardrails、成本'],
+    links: [
+      ['/course/p1-ch5.html', '第 5 章 插件树'],
+      ['/course/p1-ch6.html', '第 6 章 换零件'],
+      ['/course/p1-ch7.html', '第 7 章 自造 Harness'],
+      ['/dict.html', '词典：Agent、MCP、Cordis'],
+    ],
+  },
+]
+
+const units = [
+  { id: 'map-axis', title: '主轴：验收与判断' },
+  ...blocks.map((b) => ({ id: `map-${b.id}`, title: b.title })),
+  { id: 'map-describe', title: '描述层：把问题说清' },
+  { id: 'map-source', title: '读源码是可选项' },
+  { id: 'map-how', title: '这张图怎么用' },
+]
+---
+<Base
+  title="基础大类 · 编程通识地图"
+  description="写代码交给 AI，人做验收与判断。新学力把写代码之外的全部编程知识分成一条主轴、七块底座和一层描述。"
+  pageType="map"
+  pageId="map"
+  units={units}
+  wide
+>
+  <div class="space-y-14">
+    <header class="max-w-3xl">
+      <p class="eyebrow">基础大类 · 写代码之外</p>
+      <h1 class="mt-5 text-3xl font-bold leading-tight md:text-5xl">写代码交给 AI，<br />人做验收与判断。</h1>
+      <p class="mt-5 text-sm leading-8 text-stone-600 md:text-base">
+        这张图是基础大类的总图：一条主轴、七块知识底座和一层描述。主轴是验收与判断；七块底座是支撑判断的知识；描述层教你把看到的问题说成 AI 能改的话。前端基础是七块里的第一块，详情页放在下面。读源码是可选的深水区，不是入门要求。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="/course.html" class="btn-primary">去看课程</a>
+        <a href="/frontend.html" class="btn-ghost">看前端基础</a>
+        <a href="/describe.html" class="btn-ghost">用问题描述器</a>
+        <a href="/dict.html" class="btn-ghost">查白话词典</a>
+      </div>
+      <p class="mt-4 text-xs text-stone-400">这张图本身也能划词标注：选中一句话，点「标不懂」。</p>
+    </header>
+
+    <section id="map-axis" data-unit data-unit-title="主轴：验收与判断" class="scroll-mt-24">
+      <div class="card p-6 md:p-8">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="tag border-amber-200 bg-brand-soft text-amber-800">主轴</span>
+          <h2 class="text-2xl font-bold">验收与判断</h2>
+        </div>
+        <p class="mt-3 max-w-3xl text-sm leading-7 text-stone-600">
+          AI 写完代码，人要做的事不是逐行读源码，而是看行为、读证据、认层、判影响、判可逆、验收。这六步就是课程的主轴，每一章都在练其中一步或几步。判断之前，先把看到的东西命名并说清——描述层就是补这一步。
+        </p>
+        <ol class="mt-6 grid gap-4 md:grid-cols-2">
+          {axis.map((s) => (
+            <li class="rounded-lg border border-line bg-stone-50/60 p-4">
+              <div class="flex items-baseline gap-3">
+                <span class="font-serif-cn text-sm text-amber-700/70">{s.no}</span>
+                <h3 class="font-semibold">{s.title}</h3>
+              </div>
+              <p class="mt-2 text-sm leading-7 text-stone-600">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-sm font-medium text-brand">基础大类</p>
+          <h2 class="mt-1 text-2xl font-bold md:text-3xl">七块知识底座</h2>
+        </div>
+        <p class="max-w-md text-xs leading-6 text-stone-400">不是按语法组织，是按「你需要判断和描述什么」组织。每块都能回到课程、关卡和词典。</p>
+      </div>
+      <div class="mb-4 flex flex-wrap gap-2 text-xs">
+        {blocks.map((b) => (
+          <a href={`#map-${b.id}`} class="rounded-full border border-line bg-surface px-3 py-1 text-stone-500 transition hover:border-amber-300 hover:text-brand">{b.title}</a>
+        ))}
+        <a href="#map-describe" class="rounded-full border border-line bg-surface px-3 py-1 text-stone-500 transition hover:border-amber-300 hover:text-brand">描述层</a>
+        <a href="#map-axis" class="rounded-full border border-line bg-surface px-3 py-1 text-stone-500 transition hover:border-amber-300 hover:text-brand">验收与判断</a>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        {blocks.map((b) => (
+          <section id={`map-${b.id}`} data-unit data-unit-title={b.title} class="card scroll-mt-24 p-6">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <h3 class="text-xl font-semibold">{b.title}</h3>
+              <span class="tag">{b.question}</span>
+            </div>
+            <ul class="mt-4 space-y-2 text-sm leading-7 text-stone-600">
+              {b.topics.map((t) => (
+                <li class="flex gap-2">
+                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-amber-500"></span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+            <div class="mt-5 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-4 text-xs">
+              {b.links.map(([href, label]) => (
+                <a href={href} class="text-stone-500 hover:text-brand">{label}</a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </section>
+
+    <section id="map-describe" data-unit data-unit-title="描述层：把问题说清" class="scroll-mt-24">
+      <div class="card p-6 md:p-8">
+        <span class="tag border-amber-200 bg-brand-soft text-amber-800">描述层</span>
+        <h2 class="mt-3 text-2xl font-bold">把看到的问题，说成 AI 能改的话</h2>
+        <p class="mt-3 max-w-3xl text-sm leading-7 text-stone-600">
+          截图只能证明“长这样”，说不出“哪里不对、想要什么样”。描述层先教你命名，再给你一个固定结构：环境、元素、位置、现象、期望，再加证据。前端是第一个样本，同一套结构可以铺到后端、数据和运行环境。
+        </p>
+        <div class="mt-5 grid gap-3 sm:grid-cols-5">
+          {[
+            ['环境', '手机 390px / 电脑 1440px'],
+            ['元素', '按钮、文字、卡片、弹窗'],
+            ['位置', '页面顶部 / 中间 / 某个区块'],
+            ['现象', '溢出、错位、重叠、点不到'],
+            ['期望', '正确的结果长什么样'],
+          ].map(([t, d]) => (
+            <div class="rounded-lg border border-line bg-stone-50/60 p-3">
+              <p class="font-medium text-stone-800">{t}</p>
+              <p class="mt-1 text-xs leading-6 text-stone-500">{d}</p>
+            </div>
+          ))}
+        </div>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a href="/frontend.html" class="btn-primary">看前端基础</a>
+          <a href="/describe.html" class="btn-ghost">用问题描述器</a>
+          <a href="/frontend.html#fe-symptoms" class="btn-ghost">查症状词典</a>
+        </div>
+        <p class="mt-3 text-xs text-stone-500">例：在 390px 宽的手机上，首页标题下面的「开始学习」按钮被挤到第二行，宽度超出容器约 20px，出现横向滚动；期望标题、说明、按钮在第一屏内，按钮不超出容器。</p>
+      </div>
+    </section>
+
+    <section id="map-source" data-unit data-unit-title="读源码是可选项" class="scroll-mt-24">
+      <div class="rounded-2xl border border-amber-200 bg-brand-soft p-6 md:p-8">
+        <span class="tag border-amber-200 bg-white/70 text-amber-800">可选深水区</span>
+        <h2 class="mt-3 text-2xl font-bold">读源码是可选项，不是入门要求</h2>
+        <p class="mt-3 max-w-3xl text-sm leading-7 text-stone-700">
+          读源码能多一层证据，但它接近写代码，需要长期练习。本站不要求你逐行读源码。你可以通过行为、报错、结构、影响范围和回退能力做判断；想深入时再学。课程里的「拆前端」「拆架构」练的是读结构，不是读语法。
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3 text-sm">
+          <a href="/course/p1-ch4.html" class="text-brand hover:underline">第 4 章 拆前端</a>
+          <a href="/course/p1-ch5.html" class="text-brand hover:underline">第 5 章 拆架构</a>
+          <a href="/course/p1-ch7.html" class="text-brand hover:underline">第 7 章 自造 Harness</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="map-how" data-unit data-unit-title="这张图怎么用" class="scroll-mt-24">
+      <div class="card p-6 md:p-8">
+        <h2 class="text-2xl font-bold">这张图怎么用</h2>
+        <ol class="mt-5 grid gap-4 md:grid-cols-3">
+          <li class="rounded-lg border border-line p-4">
+            <p class="font-serif-cn text-sm text-amber-700/70">01</p>
+            <h3 class="mt-1 font-semibold">先拿到产品解剖图</h3>
+            <p class="mt-2 text-sm leading-7 text-stone-600">读第 1 章，知道前端、后端、数据、插件各是什么，出问题先认层。</p>
+            <a href="/course/p1-ch1.html" class="mt-3 inline-block text-sm text-brand hover:underline">去第 1 章 →</a>
+          </li>
+          <li class="rounded-lg border border-line p-4">
+            <p class="font-serif-cn text-sm text-amber-700/70">02</p>
+            <h3 class="mt-1 font-semibold">每读一章，回地图定位</h3>
+            <p class="mt-2 text-sm leading-7 text-stone-600">看这一章补的是哪块底座、练的是主轴哪一步。缺哪块，去关卡库和词典补。</p>
+            <a href="/gates.html" class="mt-3 inline-block text-sm text-brand hover:underline">去关卡库 →</a>
+          </li>
+          <li class="rounded-lg border border-line p-4">
+            <p class="font-serif-cn text-sm text-amber-700/70">03</p>
+            <h3 class="mt-1 font-semibold">卡住就标不懂</h3>
+            <p class="mt-2 text-sm leading-7 text-stone-600">选中一句不懂的话，点「标不懂」。在 Qoder 里打开本页，AI 按导师协议回填。</p>
+            <a href="/tutor.json" class="mt-3 inline-block text-sm text-brand hover:underline">看导师协议 →</a>
+          </li>
+        </ol>
+      </div>
+    </section>
+  </div>
+</Base>

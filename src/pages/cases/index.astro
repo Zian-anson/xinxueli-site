@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { splitUnits } from '../../lib/sections'
+
+const cases = (await getCollection('cases')).sort((a, b) => b.data.updated.localeCompare(a.data.updated))
+const summaries = new Map<string, string>()
+for (const c of cases) {
+  const units = splitUnits(c.data.id, c.body ?? '')
+  const goal = units.find((u) => u.title === '目标')?.md ?? ''
+  summaries.set(c.data.id, goal.replace(/[#>*-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90))
+}
+---
+<Base title="案例库" description="真实工程的如实记录：一个零代码的人怎么和 AI 一起推进完全陌生的项目。" wide>
+  <div class="space-y-8">
+    <header class="max-w-3xl">
+      <p class="text-sm font-medium text-brand">案例库</p>
+      <h1 class="mt-2 text-3xl font-bold md:text-4xl">不是教程，是现场记录</h1>
+      <p class="mt-4 text-sm leading-7 text-stone-600">
+        每篇案例记一个真实工程：目标 → 当时怎么和 AI 沟通 → 卡在哪、怎么过 → 结果与现状。包括没做完的部分。这个库本身就是课程主张的现场示范。
+      </p>
+      <p class="mt-3 text-xs text-stone-400">共 {cases.length} 篇</p>
+    </header>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {cases.map((c) => (
+        <a href={`/cases/${c.data.id}.html`} class="card card-hover group flex flex-col p-6">
+          <div class="flex items-start justify-between gap-3">
+            <h2 class="text-lg font-semibold group-hover:text-brand">{c.data.title}</h2>
+            <span class="tag shrink-0">{c.data.status}</span>
+          </div>
+          <p class="mt-3 flex-1 text-sm leading-7 text-stone-500">{summaries.get(c.data.id)}</p>
+          <p class="mt-4 text-xs text-stone-400">更新 {c.data.updated} · 阅读案例 →</p>
+        </a>
+      ))}
+    </div>
+
+    <div class="rounded-xl border border-line bg-surface p-5 text-sm leading-7 text-stone-600">
+      <p class="font-medium text-stone-700">想看一个正在进行的案例？</p>
+      <p class="mt-1">「新学力站点本身」记录的就是这个站怎么做出来的：选型、内容管线、标注协议、部署，包括卡住的部分。<a href="/cases/xxl.html" class="text-brand hover:underline">打开看看 →</a></p>
+    </div>
+  </div>
+</Base>

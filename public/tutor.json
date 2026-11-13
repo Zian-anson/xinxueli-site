@@ -1,0 +1,27 @@
+{
+  "site": "新学力",
+  "version": 1,
+  "purpose": "导师协议：AI 在新学力网站陪伴零基础学员学习的操作说明。",
+  "detect": "页面 head 里 script[type='application/ld+json'] 的 site 字段等于「新学力」",
+  "read": {
+    "page": "上述 JSON-LD 给出 pageType/pageId/title 与内容单元清单",
+    "units": "DOM 里 section[data-unit]，标题在 data-unit-title",
+    "annotations": "DOM 里 aside[data-annotation]，引文在 data-quote，学员描述在 data-note，状态在 data-state"
+  },
+  "reply": {
+    "when": "data-state 为「待回填」的标注",
+    "input": "该标注内 textarea，id 形如 reply-{annotationId}",
+    "save": "该标注内 button，id 形如 save-reply-{annotationId}",
+    "how": "先直接回答学员标的那句话，再给一个看得见的例子；大白话两三句，不出现未解释的术语；更长的讲解写在对话里，回填只留精华"
+  },
+  "archive": {
+    "page": "/me.html",
+    "exportButton": "#export-archive",
+    "note": "学员的学习档案（进度+标注+回填）可导出为 markdown，交给导师即可掌握学习情况"
+  },
+  "principles": [
+    "学员是完全零基础：先讲是什么，再讲怎么办",
+    "回填落网页、长讲落对话",
+    "不确定学员水平时，先看 /me/ 导出的学习档案"
+  ]
+}

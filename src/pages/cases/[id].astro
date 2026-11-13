@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { splitUnits } from '../../lib/sections'
+import { marked } from 'marked'
+
+export async function getStaticPaths() {
+  const all = await getCollection('cases')
+  return all.map((e) => ({ params: { id: e.data.id }, props: { e } }))
+}
+
+const { e } = Astro.props
+const units = splitUnits(e.data.id, e.body ?? '')
+---
+<Base title={e.data.title} description={e.data.title} pageType="case" pageId={e.data.id} units={units.map((u) => ({ id: u.id, title: u.title }))}>
+  <article class="max-w-3xl">
+    <nav class="text-xs text-stone-400">
+      <a href="/cases.html" class="hover:text-brand">案例库</a>
+      <span class="mx-2">/</span>
+      <span>{e.data.title}</span>
+    </nav>
+    <header class="mt-3 space-y-3 border-b border-line pb-6">
+      <div class="flex flex-wrap items-center gap-2 text-xs text-stone-500">
+        <span class="tag">{e.data.status}</span>
+        <span>更新 {e.data.updated}</span>
+      </div>
+      <h1 class="text-3xl font-bold leading-tight">{e.data.title}</h1>
+      <p class="text-sm text-stone-500">真实工程记录：目标、沟通、卡点、现状。可以划词标注，AI 会按导师协议回填。</p>
+    </header>
+    {units.map((u) => (
+      <section id={u.id} data-unit data-unit-title={u.title} class="scroll-mt-24">
+        <h2 class="mb-3 mt-10 text-2xl font-semibold">{u.title}</h2>
+        <div class="prose prose-stone max-w-none" set:html={marked.parse(u.md) as string} />
+      </section>
+    ))}
+    <div class="mt-12 rounded-xl border border-amber-200 bg-brand-soft p-5 text-sm leading-7 text-stone-700">
+      <p class="font-medium">这个案例对应的课程位置</p>
+      <p class="mt-1">第 3 章讲怎么过坎，第 8 章带你把产品做到上线。<a href="/course/p1-ch3.html" class="text-brand hover:underline">去第 3 章</a> · <a href="/course/p2-ch8.html" class="text-brand hover:underline">去第 8 章</a></p>
+    </div>
+    <nav class="mt-8 border-t border-line pt-4 text-sm">
+      <a href="/cases.html" class="text-stone-500 hover:text-brand">← 返回案例库</a>
+    </nav>
+  </article>
+</Base>

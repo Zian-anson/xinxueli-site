@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+
+const CATS = ['装不上', '报错了', '改不动', '拍不了板', '看不懂概念', '出事故']
+const gates = await getCollection('gates')
+const grouped = CATS.map((cat) => ({ cat, list: gates.filter((g) => g.data.category === cat) })).filter((g) => g.list.length > 0)
+const pending = CATS.filter((cat) => !gates.some((g) => g.data.category === cat))
+---
+<Base title="关卡库" description="每条坎一份档案：真实现象、当时怎么描述给 AI、怎么定位、通用解法、下次怎么预防。越久越厚。" wide>
+  <div class="space-y-10">
+    <header class="max-w-3xl">
+      <p class="text-sm font-medium text-brand">关卡库</p>
+      <h1 class="mt-2 text-3xl font-bold md:text-4xl">踩过的坑，写成能查的档案</h1>
+      <p class="mt-4 text-sm leading-7 text-stone-600">
+        每条坎一份档案：真实现象 → 当时怎么描述给 AI → 怎么定位 → 通用解法 → 下次怎么预防。零基础真正死在过程中的一坎一坎，这里一条条记下来。库越久越厚，是站点的护城河。
+      </p>
+      <p class="mt-3 text-xs text-stone-400">共 {gates.length} 条档案 · 按六类坎分组</p>
+    </header>
+
+    <div class="space-y-8">
+      {grouped.map(({ cat, list }) => (
+        <section>
+          <div class="mb-3 flex items-baseline justify-between gap-3 border-b border-line pb-2">
+            <h2 class="text-xl font-semibold">{cat}</h2>
+            <span class="text-xs text-stone-400">{list.length} 档</span>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            {list.map((g) => (
+              <a href={`/gates/${g.data.id}.html`} class="card card-hover group block p-5">
+                <div class="flex items-start justify-between gap-3">
+                  <h3 class="font-medium text-stone-800 group-hover:text-brand">{g.data.title}</h3>
+                  <span class="tag shrink-0">严重度 {g.data.severity}</span>
+                </div>
+                <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-stone-400">
+                  <span>{g.data.layer}</span>
+                  <span>更新 {g.data.updated}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    {pending.length > 0 && (
+      <div class="rounded-xl border border-dashed border-line p-5 text-sm text-stone-500">
+        <p class="font-medium text-stone-600">还在长的类别</p>
+        <p class="mt-1">这些类别还没有档案，站长踩到就补：</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {pending.map((cat) => <span class="tag">{cat}</span>)}
+        </div>
+      </div>
+    )}
+
+    <div class="rounded-xl border border-amber-200 bg-brand-soft p-5 text-sm leading-7 text-stone-700">
+      <p class="font-medium">第 3 章「过坎」是这张表的用法说明。</p>
+      <p class="mt-1">先认层，再描述，一次只改一处；过完把新坑补进来。<a href="/course/p1-ch3.html" class="text-brand hover:underline">去读第 3 章 →</a></p>
+    </div>
+  </div>
+</Base>

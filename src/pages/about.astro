@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../layouts/Base.astro'
+import { splitUnits } from '../lib/sections'
+import { marked } from 'marked'
+
+const entries = await getCollection('about')
+const e = entries[0]
+const body = e ? splitUnits('about', e.body ?? '').find((u) => u.title === '正文')?.md ?? '' : ''
+---
+<Base title={e?.data.title ?? '关于'}>
+  <article class="max-w-3xl space-y-8">
+    <header>
+      <p class="text-sm font-medium text-brand">关于</p>
+      <h1 class="mt-2 text-3xl font-bold">{e?.data.title ?? '关于新学力'}</h1>
+    </header>
+    {e ? (
+      <>
+        <div class="prose prose-stone max-w-none" set:html={marked.parse(body) as string} />
+        {e.data.contact && (
+          <p class="rounded-xl border border-line bg-surface p-4 text-sm text-stone-600">联系方式：{e.data.contact}</p>
+        )}
+      </>
+    ) : (
+      <p class="text-stone-600">机构发学历，这里给学力——教零基础的人靠和 AI 沟通做出产品、收到钱。</p>
+    )}
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="card p-5 sm:col-span-2">
+        <p class="text-xs text-stone-400">定位</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">不写代码，也不读源码；看得懂系统、说得清问题、验收得住结果。课程教写代码之外的全部编程知识，主轴是验收与判断，读源码是可选项。</p>
+        <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          <a href="/map.html" class="text-brand hover:underline">看基础大类 →</a>
+          <a href="/frontend.html" class="text-stone-500 hover:text-brand">前端基础</a>
+          <a href="/describe.html" class="text-stone-500 hover:text-brand">问题描述器</a>
+        </div>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs text-stone-400">这个站怎么来的</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">用 Qoder 做的。内容、页面、标注、导师协议、部署，全程和 AI 一起完成；站点本身就是课程主张的样本：不写代码、不读源码，也能做出真实上线的东西。</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs text-stone-400">你可以从这里开始</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">第 0 章只做两件事：装好 Qoder，装好 DSH，完成一次对话。</p>
+        <a href="/course/p1-ch0.html" class="mt-3 inline-flex text-sm text-brand hover:underline">从第 0 章开始 →</a>
+      </div>
+      <div class="card p-5 sm:col-span-2">
+        <p class="text-xs text-stone-400">参赛信息</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">2026 Qoder 高校创造力大赛 · StudyHack 学习科研赛道。评委可以从第 1 章体验划词标注，到「我的学习」导出学习档案。</p>
+      </div>
+    </div>
+  </article>
+</Base>

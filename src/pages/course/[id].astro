@@ -1,0 +1,184 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { splitUnits } from '../../lib/sections'
+import { marked } from 'marked'
+
+export async function getStaticPaths() {
+  const all = (await getCollection('course')).sort((a, b) => a.data.part - b.data.part || a.data.chapter - b.data.chapter)
+  return all.map((e) => ({
+    params: { id: e.data.id },
+    props: { e, prev: all[all.indexOf(e) - 1] ?? null, next: all[all.indexOf(e) + 1] ?? null },
+  }))
+}
+
+const { e, prev, next } = Astro.props
+const units = splitUnits(e.data.id, e.body ?? '')
+const minutes = Math.max(5, Math.round((e.body?.length ?? 0) / 350))
+const promptText = `请打开当前页面（新学力 ${e.data.id}），按 /tutor.json 的导师协议：读取本页的页面自述和所有标注，回填状态为「待回填」的标注。每条先直接回答学员标出的那句话，再给一个看得见的例子，大白话两三句；更长的讲解留在对话里。回填完成后告诉我你改了哪几条。`
+---
+<Base
+  title={`第 ${e.data.chapter} 章 · ${e.data.title}`}
+  description={e.data.goal}
+  pageType="chapter"
+  pageId={e.data.id}
+  units={units.map((u) => ({ id: u.id, title: u.title }))}
+  wide
+>
+  <div class="fixed left-0 top-14 z-30 h-0.5 w-full">
+    <div id="reading-progress" class="h-full w-0 bg-brand transition-[width] duration-150"></div>
+  </div>
+
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_230px]">
+    <article id="article" class="min-w-0 max-w-3xl">
+      <nav class="text-xs text-stone-400">
+        <a href="/course.html" class="hover:text-brand">课程</a>
+        <span class="mx-2">/</span>
+        <span>第 {e.data.chapter} 章</span>
+      </nav>
+      <header class="mt-3 space-y-3">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-stone-500">
+          <span class="tag">{e.data.pace}</span>
+          <span>约 {minutes} 分钟</span>
+          <span>更新 {e.data.updated}</span>
+          <a href="/map.html" class="hover:text-brand">在基础大类里看</a>
+        </div>
+        <h1 class="text-3xl font-bold leading-tight md:text-4xl">第 {e.data.chapter} 章 · {e.data.title}</h1>
+        <p class="text-sm leading-7 text-stone-600 md:text-base">{e.data.goal}</p>
+      </header>
+
+      <div class="mt-5 flex flex-wrap items-center gap-3 border-y border-line py-3 text-xs text-stone-500">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-amber-800">
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+          本页可划词标注
+        </span>
+        <button type="button" data-copy-prompt class="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 transition hover:border-amber-300 hover:text-brand">
+          复制导师指令
+        </button>
+        <span data-copy-status class="text-stone-400"></span>
+      </div>
+
+      <details class="mt-5 card p-4 lg:hidden">
+        <summary class="cursor-pointer text-sm font-medium text-stone-700">本页目录</summary>
+        <nav class="mt-3 space-y-2 text-sm">
+          {units.map((u) => (
+            <a href={`#${u.id}`} class="block text-stone-500 hover:text-brand">{u.title}</a>
+          ))}
+        </nav>
+      </details>
+
+      {units.map((u) => (
+        <section id={u.id} data-unit data-unit-title={u.title} class="scroll-mt-24">
+          <h2 class="mb-3 mt-10 text-2xl font-semibold">{u.title}</h2>
+          <div class="prose prose-stone max-w-none" set:html={marked.parse(u.md) as string} />
+        </section>
+      ))}
+
+      <section class="mt-12 rounded-xl border border-amber-200 bg-brand-soft p-6">
+        <p class="font-serif-cn text-lg font-semibold text-stone-900">把这一页变成你的活教材</p>
+        <p class="mt-2 text-sm leading-7 text-stone-600">
+          在 Qoder 里打开本页，划词标「不懂」，然后把导师指令贴给 AI。它会按导师协议读取你的标注，回答落在对话里，精华回填到网页上。
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button type="button" data-copy-prompt class="btn-primary">复制导师指令</button>
+          <a href="/tutor.json" class="btn-ghost">查看导师协议</a>
+        </div>
+        <details class="mt-3">
+          <summary class="cursor-pointer text-xs text-stone-500 hover:text-brand">查看导师指令原文</summary>
+          <pre data-prompt-text class="mt-2 whitespace-pre-wrap rounded-lg border border-amber-200 bg-white/70 p-3 text-xs leading-6 text-stone-600">{promptText}</pre>
+        </details>
+        <p data-copy-status class="mt-3 text-xs text-stone-500"></p>
+      </section>
+
+      <nav class="mt-10 grid gap-3 border-t border-line pt-6 sm:grid-cols-2">
+        {prev ? (
+          <a href={`/course/${prev.data.id}.html`} class="card card-hover p-4">
+            <p class="text-xs text-stone-400">上一章</p>
+            <p class="mt-1 text-sm font-medium text-stone-700">第 {prev.data.chapter} 章 · {prev.data.title}</p>
+          </a>
+        ) : (
+          <span></span>
+        )}
+        {next ? (
+          <a href={`/course/${next.data.id}.html`} class="card card-hover p-4 sm:text-right">
+            <p class="text-xs text-stone-400">下一章</p>
+            <p class="mt-1 text-sm font-medium text-stone-700">第 {next.data.chapter} 章 · {next.data.title}</p>
+          </a>
+        ) : (
+          <a href="/course.html" class="card card-hover p-4 sm:text-right">
+            <p class="text-xs text-stone-400">全部读完</p>
+            <p class="mt-1 text-sm font-medium text-stone-700">回到课程全景</p>
+          </a>
+        )}
+      </nav>
+    </article>
+
+    <aside class="hidden lg:block">
+      <div class="sticky top-20 space-y-6">
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wide text-stone-400">本页目录</p>
+          <nav class="mt-3 space-y-2 border-l border-line pl-3 text-sm">
+            {units.map((u) => (
+              <a href={`#${u.id}`} data-toc-link={u.id} class="block text-stone-500 transition hover:text-brand">{u.title}</a>
+            ))}
+          </nav>
+        </div>
+        <div class="card p-4 text-xs leading-6 text-stone-500">
+          <p class="font-medium text-stone-700">边读边标</p>
+          <p class="mt-1">选中不懂的一句话，点「标不懂」。Qoder 里的 AI 会按导师协议回填。</p>
+          <a href="/me.html" class="mt-2 inline-block text-brand hover:underline">我的学习档案 →</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const bar = document.getElementById('reading-progress')
+    const article = document.getElementById('article')
+    const updateProgress = () => {
+      if (!bar || !article) return
+      const rect = article.getBoundingClientRect()
+      const total = rect.height - window.innerHeight * 0.6
+      const passed = Math.min(Math.max(-rect.top, 0), Math.max(total, 1))
+      bar.style.width = `${Math.min(100, Math.round((passed / Math.max(total, 1)) * 100))}%`
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true })
+    updateProgress()
+
+    const links = document.querySelectorAll<HTMLElement>('[data-toc-link]')
+    const sections = [...links].map((link) => document.getElementById(link.dataset.tocLink ?? '')).filter(Boolean) as HTMLElement[]
+    if ('IntersectionObserver' in window && sections.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue
+            links.forEach((link) => {
+              const active = link.dataset.tocLink === entry.target.id
+              link.classList.toggle('text-brand', active)
+              link.classList.toggle('font-medium', active)
+              link.classList.toggle('text-stone-500', !active)
+            })
+          }
+        },
+        { rootMargin: '-20% 0px -70% 0px' },
+      )
+      sections.forEach((section) => observer.observe(section))
+    }
+
+    const pageId = document.documentElement.dataset.pageId ?? ''
+    const prompt = document.querySelector('[data-prompt-text]')?.textContent?.trim() || `请打开当前页面（新学力 ${pageId}），按 /tutor.json 的导师协议：读取本页的页面自述和所有标注，回填状态为「待回填」的标注。每条先直接回答，再给一个看得见的例子，大白话两三句；更长的讲解留在对话里。回填完成后告诉我你改了哪几条。`
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-copy-prompt]')
+    const statuses = document.querySelectorAll<HTMLElement>('[data-copy-status]')
+    buttons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(prompt)
+          statuses.forEach((status) => (status.textContent = '已复制，去 Qoder 粘贴给 AI'))
+          setTimeout(() => statuses.forEach((status) => (status.textContent = '')), 2500)
+        } catch {
+          statuses.forEach((status) => (status.textContent = '复制失败，可展开「查看导师指令原文」手动复制'))
+        }
+      })
+    })
+  </script>
+</Base>
