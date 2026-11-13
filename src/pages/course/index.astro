@@ -3,23 +3,22 @@ import { getCollection } from 'astro:content'
 import Base from '../../layouts/Base.astro'
 
 const partTitles: Record<number, { title: string; sub: string }> = {
-  1: { title: '第一部分 · 开发', sub: '从用 DeepSeek Harness 到自造 Harness' },
-  2: { title: '第二部分 · 商业闭环', sub: '做出产品，收到钱' },
+  1: { title: '开发主线', sub: '从用 DeepSeek Harness 到自造 Harness' },
 }
 const all = (await getCollection('course')).sort((a, b) => a.data.part - b.data.part || a.data.chapter - b.data.chapter)
-const parts = [1, 2]
+const parts = [1]
   .map((p) => ({ part: p, chapters: all.filter((c) => c.data.part === p) }))
   .filter((p) => p.chapters.length > 0)
 
 const minutes = (body: string | undefined) => Math.max(5, Math.round((body?.length ?? 0) / 350))
 ---
-<Base title="课程" description="写代码之外的全部编程知识：11 章从装工具到收到第一笔钱，主轴是验收与判断。" wide>
+<Base title="课程" description="写代码之外的全部编程知识：从装工具到自造 Harness，主轴是验收与判断。" wide>
   <div class="space-y-10">
     <header class="max-w-3xl">
       <p class="text-sm font-medium text-brand">课程全景</p>
-      <h1 class="mt-2 text-3xl font-bold md:text-4xl">11 章，从装工具到收到第一笔钱</h1>
+      <h1 class="mt-2 text-3xl font-bold md:text-4xl">{all.length} 章，从装工具到自造 Harness</h1>
       <p class="mt-4 text-sm leading-7 text-stone-600">
-        这门课不按语法组织，按验收与判断的主轴组织：第一部分补写代码之外的编程通识（装工具、看懂骨架、说清需求、过坎、拆前端、拆架构、改造、自造 Harness），第二部分用真实产品完成交付（上线、收款、毕业项目）。全程不写代码，也不要求读源码。
+        这门课不按语法组织，按验收与判断的主轴组织：补写代码之外的编程通识——装工具、看懂骨架、说清需求、过坎、拆前端、拆架构、改造、自造 Harness。全程不写代码，也不要求读源码。
       </p>
       <p class="mt-3 text-sm">
         <a href="/map.html" class="text-brand hover:underline">看这张课对应的基础大类 →</a>

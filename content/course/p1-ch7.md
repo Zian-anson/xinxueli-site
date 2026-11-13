@@ -4,7 +4,7 @@ part: 1
 chapter: 7
 title: 自造 Harness
 pace: 实战
-goal: 拥有完全自定义的个人 Harness——第一部分毕业物
+goal: 拥有完全自定义的个人 Harness——开发主线毕业物
 status: 成文
 updated: "2026-11-13"
 prereq: p1-ch6
@@ -86,7 +86,7 @@ profile 重要得多：它决定这棵树叠哪些组合包。做法：
 - 我用它做过一件真实的事，不是只跑了个 demo；
 - 我知道怎么同步上游，不会一升级就全坏。
 
-五条全过，第一部分毕业。
+五条全过，开发主线毕业。
 
 ## 要点卡
 
