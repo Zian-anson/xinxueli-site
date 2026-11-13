@@ -33,6 +33,6 @@ export function buildArchiveMd(
     }
   }
   if (!any) lines.push('暂无标注。')
-  lines.push('## 自测记录', '暂无线上作答（线上自测作答随第二期上线；本期自测在课程章内完成）。')
+  lines.push('## 自测记录', '暂无线上作答（本期自测在课程章内完成）。')
   return lines.join('\n')
 }
